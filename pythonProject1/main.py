@@ -1,15 +1,15 @@
 import asyncio
 
-from aiogram import Dispatcher, Bot, F
+from aiogram import Dispatcher, Bot, F, types
 from aiogram.types import Message
-from aiogram.fsm.storage.memory import MemoryStorage
+from important_data.config import TOKEN, conn_params # параметры подключения к бд
 
-from important_data.config import TOKEN, conn_params
+from courier_panel.courier import courier_router
 
 
-storage = MemoryStorage()
 bot = Bot(token=TOKEN)
-dp = Dispatcher(storage=storage)
+dp = Dispatcher()
+dp.include_router(courier_router) #Подключение роутера из панели курьера к диспачеру
 
 #/start - команда запуска бота
 @dp.message(F.text.lower() == "/start")

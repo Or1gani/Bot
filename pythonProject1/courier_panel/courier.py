@@ -45,7 +45,18 @@ async def confirm(callback : CallbackQuery):
     await callback.message.edit_text(
         "Откуда: (название ресторана), (адрес)\nКуда: (адрес клиента)\n(Комментарий клиента)\nномер заказа(служебная инфа)",
             reply_markup=get_callback_buttons({
-                'Заказ отдан клиенту' : 'complete' #####
+                'Заказ отдан клиенту' : 'complete'
+            },
+            sizes=(1,)
+        )
+    )
+
+@courier_router.callback_query(F.data == 'complete')
+async def confirm(callback : CallbackQuery):
+    await callback.message.edit_text(
+        "Откуда: (название ресторана), (адрес)\nКуда: (адрес клиента)\n(Комментарий клиента)\nномер заказа(служебная инфа)",
+            reply_markup=get_callback_buttons({
+                'Заказ отдан клиенту' : 'complete'
             },
             sizes=(1,)
         )

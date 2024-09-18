@@ -30,7 +30,7 @@ def get_profile_button(*, level: int, sizes: tuple[int] = (1,)):
 
 def get_region_buttons(*, level: int, sizes: tuple[int] = (1,)):
     keyboard = InlineKeyboardBuilder()
-    regions = ['Район 1', 'Район 2', 'Район 3', 'Район 4', 'Район 5', 'Район 6', 'Район 7']
+    regions = ['Район 1', 'Район 2', 'Район 3', 'Район 4', 'Район 5', 'Район 6', 'Район 7'] #В дальнейшем замениться на подсос данных из бд
     keyboard.add(InlineKeyboardButton(
         text='Назад',
          callback_data=region_callback(level=0, menu_name="main").pack()

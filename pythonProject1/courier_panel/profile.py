@@ -2,7 +2,6 @@ from aiogram import F, Router, types
 from aiogram.types import Message, CallbackQuery
 from aiogram.filters import Command
 
-from pythonProject1.assets.menu_data import desciption_for_pages as dfp
 from pythonProject1.keyboards.inline import get_callback_buttons, get_region_buttons, get_profile_button, \
     region_callback
 from pythonProject1.utils.menu_processing import get_menu_content

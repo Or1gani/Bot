@@ -5,26 +5,21 @@ from aiogram.types import Message
 from important_data.config import TOKEN, conn_params # параметры подключения к бд
 
 from courier_panel.courier import courier_router
-from utils.menu_button import Command_manager
+from courier_panel.profile import courier_profile_router
+from utils.menu_button import Command_manager, CourierCommandManager, AdminCommandManager
 
 
 bot = Bot(token=TOKEN)
 dp = Dispatcher()
-dp.include_router(courier_router) #Подключение роутера из панели курьера к диспачеру
-
-c_start = types.BotCommand(command='start', description='Запуск бота!')
-c_1 = types.BotCommand(command='s1', description='!!!!')
-#c_2 = types.BotCommand(command='s2', description='????')
-
-
+dp.include_routers(courier_router, courier_profile_router) #Подключение роутера из панелей к диспачеру
+ccm = CourierCommandManager()
 
 #/start - команда запуска бота
 @dp.message(F.text.lower() == "/start")
 async def start_command(message : Message):
     await bot.delete_my_commands()
-    await Command_manager.take_commands()
-    await Command_manager.setup_commands(bot)
-    await Command_manager.setup_menu(bot, message)
+    await ccm.setup_commands(bot=bot)
+    await ccm.setup_menu(bot=bot, message=message)
     await message.answer(F"Привет, {message.from_user.first_name}!")
 
 #основная функция запуска бота

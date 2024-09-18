@@ -15,8 +15,9 @@ class CourierCommandManager(Command_manager):
         super().__init__()
         # Добавляем команды для курьеров
         self.commands = [
-            types.BotCommand(command='start', description='Запуск бота для курьеров'),
-            types.BotCommand(command='order', description='Просмотр заказов')
+            types.BotCommand(command='start', description='Запуск бота'),
+            types.BotCommand(command='order', description='Просмотр заказов'),
+            types.BotCommand(command='profile', description='Ваш профиль')
         ]
 
 class AdminCommandManager(Command_manager):
@@ -24,9 +25,6 @@ class AdminCommandManager(Command_manager):
         super().__init__()
         # Добавляем команды для администраторов
         self.commands = [
-            types.BotCommand(command='start', description='Запуск бота для админов'),
-            types.BotCommand(command='stats', description='Просмотр статистики')
+            types.BotCommand(command='start', description='Запуск бота'),
         ]
-#c_start = types.BotCommand(command='start', description='Запуск бота')
-#c_2 = types.BotCommand(command='start', description='Запуск бота')
-#menu_courier(c_start, c_2)
+

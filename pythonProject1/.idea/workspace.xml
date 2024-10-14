@@ -5,18 +5,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c8465845-7abf-4d32-a723-f47edf7c7185" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/DataBase/BoT_MACAROV.db" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/DataBase/Kura.db" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/admin_panel/admin.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/admin_panel/profile.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/utils/db_data.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DataBase/Kura.db" beforeDir="false" afterPath="$PROJECT_DIR$/DataBase/Kura.db" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/admin_panel/profile.py" beforeDir="false" afterPath="$PROJECT_DIR$/admin_panel/profile.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/assets/menu_data.py" beforeDir="false" afterPath="$PROJECT_DIR$/assets/menu_data.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bd.py" beforeDir="false" afterPath="$PROJECT_DIR$/bd.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/courier_panel/courier.py" beforeDir="false" afterPath="$PROJECT_DIR$/courier_panel/courier.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/courier_panel/profile.py" beforeDir="false" afterPath="$PROJECT_DIR$/courier_panel/profile.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/important_data/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/important_data/config.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/keyboards/inline.py" beforeDir="false" afterPath="$PROJECT_DIR$/keyboards/inline.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/db_data.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/db_data.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/utils/menu_processing.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/menu_processing.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -51,6 +45,7 @@
     "Python.bd.executor": "Run",
     "Python.db_data.executor": "Run",
     "Python.main.executor": "Run",
+    "Python.profile.executor": "Run",
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "git-widget-placeholder": "develop",
@@ -130,10 +125,33 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="profile" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="pythonProject1" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/admin_panel" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/admin_panel/profile.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.db_data" />
         <item itemvalue="Python.main" />
+        <item itemvalue="Python.db_data" />
+        <item itemvalue="Python.profile" />
         <item itemvalue="Python.bd" />
       </list>
     </recent_temporary>

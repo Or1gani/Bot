@@ -22,3 +22,4 @@ def get_menu_content(level: int, menu_name: str):
         return main(level=level, menu_name=menu_name)
     elif level == 1:
         return region(level=level, menu_name=menu_name)
+

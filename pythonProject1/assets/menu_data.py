@@ -6,9 +6,3 @@ desciption_for_pages = {
     "region" : "Доступные для смены районы:"
 
 }
-desciption_for_pages_admin = {
-    "main":"Вы управляете районом: (Название)\nКоличество курьеров: (Кол-во)\nАктивные курьеры: (Кол-во)",
-    "employees":"Сотрудники",
-    "person":f"Фио: {name}\nТелефон: {number}\nВыполнено заказов: {all_orders}\nЗаказов сегодня: {daily_orders}"
-
-}

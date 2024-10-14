@@ -1,6 +1,6 @@
 import aiogram
-from pythonProject1.keyboards.inline import get_profile_button, get_region_buttons
-from pythonProject1.assets.menu_data import desciption_for_pages as dfp
+from keyboards.inline import get_profile_button, get_region_buttons
+from assets.menu_data import desciption_for_pages as dfp
 
 def find_text(menu_name):
     for name, text in dfp.items():

@@ -2,16 +2,19 @@ import asyncio
 
 from aiogram import Dispatcher, Bot, F, types
 from aiogram.types import Message
-from important_data.config import TOKEN, conn_params # параметры подключения к бд
+from important_data.config import TOKEN# параметры подключения к бд
 
 from courier_panel.courier import courier_router
 from courier_panel.profile import courier_profile_router
+from admin_panel.admin import admin_router
+from admin_panel.profile import admin_profile_router
+
 from utils.menu_button import Command_manager, CourierCommandManager, AdminCommandManager
 
 
 bot = Bot(token=TOKEN)
 dp = Dispatcher()
-dp.include_routers(courier_router, courier_profile_router) #Подключение роутера из панелей к диспачеру
+dp.include_routers(courier_router, courier_profile_router, admin_router, admin_profile_router) #Подключение роутера из панелей к диспачеру
 ccm = CourierCommandManager()
 
 #/start - команда запуска бота

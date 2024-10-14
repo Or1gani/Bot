@@ -3,8 +3,8 @@ from aiogram import F, Router, types
 from aiogram.types import Message, CallbackQuery
 from aiogram.filters import Command
 
-from pythonProject1.keyboards.inline import get_callback_buttons
-from pythonProject1.keyboards.reply import get_buttons
+from keyboards.inline import get_callback_buttons
+from keyboards.reply import get_buttons
 
 courier_router = Router()
 

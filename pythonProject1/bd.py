@@ -14,7 +14,7 @@ try:
     # Выполняем запрос для подсчета строк
 
     with conn.cursor() as cursor:
-        cursor.execute("SELECT COUNT(*) FROM akt_priem")
+        cursor.execute("SELECT COUNT(*) FROM materface")
         print("Запрос выполнен, получаем данные...")
         # Получаем результат запроса
         row_count = cursor.fetchone()

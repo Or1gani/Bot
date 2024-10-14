@@ -6,12 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="c8465845-7abf-4d32-a723-f47edf7c7185" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DataBase/Kura.db" beforeDir="false" afterPath="$PROJECT_DIR$/DataBase/Kura.db" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/admin_panel/profile.py" beforeDir="false" afterPath="$PROJECT_DIR$/admin_panel/profile.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/assets/menu_data.py" beforeDir="false" afterPath="$PROJECT_DIR$/assets/menu_data.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/keyboards/inline.py" beforeDir="false" afterPath="$PROJECT_DIR$/keyboards/inline.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils/db_data.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/db_data.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils/menu_processing.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/menu_processing.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

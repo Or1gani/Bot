@@ -26,5 +26,6 @@ class AdminCommandManager(Command_manager):
         # Добавляем команды для администраторов
         self.commands = [
             types.BotCommand(command='start', description='Запуск бота'),
+            types.BotCommand(command='admin_panel', description='Панель администратора'),
         ]
 

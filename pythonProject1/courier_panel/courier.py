@@ -42,8 +42,9 @@ async def take_order(callback : CallbackQuery):
         ),
         show_alert=True
     )
-    # Создаем задачу для удаления сообщения через 5 минут
-    delete_task = asyncio.create_task(delete_message_after_delay(callback, msg, 6))
+    # Создаем задачу для удаления сообщения через "delay" сек
+    delay = 6
+    delete_task = asyncio.create_task(delete_message_after_delay(callback, msg, delay))
     # Сохраняем задачу, чтобы можно было её отменить
     delete_tasks[msg.message_id] = delete_task
 

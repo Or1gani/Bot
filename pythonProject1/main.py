@@ -10,20 +10,28 @@ from admin_panel.admin import admin_router
 from admin_panel.profile import admin_profile_router
 
 from utils.menu_button import Command_manager, CourierCommandManager, AdminCommandManager
-
+from utils.db_data import admin_valid
 
 bot = Bot(token=TOKEN)
 dp = Dispatcher()
 dp.include_routers(courier_router, courier_profile_router, admin_router, admin_profile_router) #Подключение роутера из панелей к диспачеру
-ccm = CourierCommandManager()
+ccm = CourierCommandManager() #Экзепляр меню для курьера
+acm = AdminCommandManager() #Экзепляр меню для админа
 
 #/start - команда запуска бота
 @dp.message(F.text.lower() == "/start")
 async def start_command(message : Message):
-    await bot.delete_my_commands()
-    await ccm.setup_commands(bot=bot)
-    await ccm.setup_menu(bot=bot, message=message)
-    await message.answer(F"Привет, {message.from_user.first_name}!")
+    t_id = message.from_user.id
+    if admin_valid(t_id):
+        await bot.delete_my_commands()
+        await acm.setup_commands(bot=bot)
+        await acm.setup_menu(bot=bot, message=message)
+        await message.answer(F"Привет, {message.from_user.first_name}! Вы Администратор")
+    else:
+        await bot.delete_my_commands()
+        await ccm.setup_commands(bot=bot)
+        await ccm.setup_menu(bot=bot, message=message)
+        await message.answer(F"Привет, {message.from_user.first_name}! Вы Курьер")
 
 #основная функция запуска бота
 async def main():

@@ -24,6 +24,7 @@ async def employee_list(callback : CallbackQuery):
     names, other_data = get_employees()
     rm = get_name_emplyees_buttons(names)
     await callback.message.edit_text(text="Сотрудники", reply_markup=rm)
+
 @admin_profile_router.callback_query(F.data == 'back-to-admin-panel')
 async def back_to_panel(callback: CallbackQuery):
     t_id = int(callback.from_user.id)
@@ -47,3 +48,4 @@ async def name_employee_buttons(callback : types.CallbackQuery, callback_data : 
                 await callback.message.edit_text(text=f'ФИО: {item[0]}\nНомер паспорта: {item[1]}\nСерия паспорта: {item[2]}\nТелефон: {item[3]}\nID Telegram: {item[4]}\nОбщее количество заказов: {item[5]}\nЗаказов за день: {item[6]}\nОбщий заработок: {item[7]}\nРегион: {courier_reg}\nРейтинг: Отсутствует', reply_markup=rm)
             else:
                 await callback.message.edit_text(text=f'ФИО: {item[0]}\nНомер паспорта: {item[1]}\nСерия паспорта: {item[2]}\nТелефон: {item[3]}\nID Telegram: {item[4]}\nОбщее количество заказов: {item[5]}\nЗаказов за день: {item[6]}\nОбщий заработок: {item[7]}\nРегион: {courier_reg}\nРейтинг: {item[9]}', reply_markup=rm)
+

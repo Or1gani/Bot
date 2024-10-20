@@ -51,6 +51,7 @@ def get_back_to_panel(sizes: tuple[int] = (1,)):
             callback_data="back-to-admin-panel"
         )
     )
+
     return keyboard.adjust(*sizes).as_markup()
 def get_name_emplyees_buttons(names: List[str], sizes: tuple[int] = (1,)):
     keyboard = InlineKeyboardBuilder()
@@ -61,6 +62,12 @@ def get_name_emplyees_buttons(names: List[str], sizes: tuple[int] = (1,)):
                 callback_data=name_callback(name=f"{name}").pack()
             )
         )
+    keyboard.add(
+        InlineKeyboardButton(
+            text="Добавить Сотрудника",
+            callback_data="add_employee"
+        )
+    )
     keyboard.add(
         InlineKeyboardButton(
             text="Назад",

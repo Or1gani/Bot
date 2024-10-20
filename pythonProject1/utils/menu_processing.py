@@ -23,3 +23,32 @@ def get_menu_content(level: int, menu_name: str):
     elif level == 1:
         return region(level=level, menu_name=menu_name)
 
+def role(level, menu_name):
+    pass
+def nick(level, menu_name):
+    pass
+def fio(level, menu_name):
+    pass
+def pas(level, menu_name):
+    pass
+def confirm(level, menu_name):
+    pass
+def correction(level, menu_name):
+    pass
+
+
+def get_setting_content(level: int, menu_name: str):
+    if level == 0:
+        return role(level=level, menu_name=menu_name)
+    elif level == 1:
+        return nick(level=level, menu_name=menu_name)
+    elif level == 2:
+        return fio(level=level, menu_name=menu_name)
+    elif level == 3:
+        return pas(level=level, menu_name=menu_name)
+    elif level == 4:
+        return confirm(level=level, menu_name=menu_name)
+    elif level == 5:
+        return correction(level=level, menu_name=menu_name)
+
+

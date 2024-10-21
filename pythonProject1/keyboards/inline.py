@@ -13,8 +13,13 @@ class name_callback(CallbackData, prefix="name"):
 class add_employee_callback(CallbackData, prefix="employee"):
     level: int
     menu_name: str
-    data_for_db: str
+    data_for_db: str | None = None
     yes: int | None = None
+class edit_employee_callback(CallbackData, prefix="edit"):
+    menu_name: str | None = None
+    value: str | None = None
+    decide: str | None = None
+    take: str |None = None
 def get_callback_buttons(
         *,
         buttons: dict[str, str],
@@ -202,6 +207,54 @@ def get_correction_btns(level: int, data_for_db: str, sizes: tuple[int] = (2,)):
         InlineKeyboardButton(
             text="Подтвердить",
             callback_data=add_employee_callback(level=level+1, menu_name="confirm_data", data_for_db=data_for_db).pack()  # тут
+        )
+    )
+    return keyboard.adjust(*sizes).as_markup()
+
+def get_correction_btns2(level: int, data_for_db: str, sizes: tuple[int] = (2,)):
+    keyboard = InlineKeyboardBuilder()
+    keyboard.add(
+        InlineKeyboardButton(
+            text="Роль",
+            callback_data= edit_employee_callback(menu_name="role", take='1').pack()
+        ),
+        InlineKeyboardButton(
+            text="Ник телеграм",
+            callback_data= edit_employee_callback(menu_name="nick", take='1').pack()
+        ),
+        InlineKeyboardButton(
+            text="Имя",
+            callback_data= edit_employee_callback(menu_name="name1", take='1').pack()
+        ),
+        InlineKeyboardButton(
+            text="Фамилия",
+            callback_data= edit_employee_callback(menu_name="name2", take='1').pack()
+        ),
+        InlineKeyboardButton(
+            text="Отчество",
+            callback_data= edit_employee_callback(menu_name="name3", take='1').pack()
+        ),
+        InlineKeyboardButton(
+            text="Паспорт",
+            callback_data= edit_employee_callback(menu_name="pass", take='1').pack()
+        ),
+        InlineKeyboardButton(
+            text="Подтвердить",
+            callback_data=add_employee_callback(level=level+1, menu_name="confirm_data", data_for_db=data_for_db).pack()  # тут
+        )
+    )
+    return keyboard.adjust(*sizes).as_markup()
+
+def get_decide(menu_name: str, value: str, sizes: tuple[int] = (2,)):
+    keyboard = InlineKeyboardBuilder()
+    keyboard.row(
+        InlineKeyboardButton(
+            text="Да",
+            callback_data=edit_employee_callback(menu_name=menu_name, value=value, decide="True").pack()  # Здесь
+        ),
+        InlineKeyboardButton(
+            text="Нет",
+            callback_data=edit_employee_callback(menu_name=menu_name, value=value, decide="False").pack()  # Здесь
         )
     )
     return keyboard.adjust(*sizes).as_markup()

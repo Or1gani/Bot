@@ -7,3 +7,6 @@ class add_employee_states(StatesGroup):
     waiting_for_name3 = State()
     waiting_for_pass = State()
     waiting_for_confirmation = State()
+
+class edit_employee(StatesGroup):
+    waiting_for_data = State()

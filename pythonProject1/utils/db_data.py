@@ -130,3 +130,47 @@ def create_or_update_data_for_sys(item, column, telegram_id):
 
     conn.commit()  # Сохраняем изменения
     conn.close()  # Закрываем соединение
+
+
+def transfer_data():
+    # Подключаемся к исходной и целевой базам данных
+    target_db_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../DataBase/Kura.db'))
+    source_db_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../DataBase/sys.db'))
+    source_conn = sqlite3.connect(source_db_path)
+    target_conn = sqlite3.connect(target_db_path)
+
+    source_cursor = source_conn.cursor()
+    target_cursor = target_conn.cursor()
+
+    # Извлекаем данные из таблицы "data"
+    source_cursor.execute("SELECT * FROM data")
+    rows = source_cursor.fetchall()
+
+    for row in rows:
+        # Объединяем name1, name2 и name3 в одно значение для "Name"
+        name = f"{row[3]} {row[4]} {row[5]}".strip()  # row[3], row[4], row[5] - соответствуют name1, name2, name3
+
+        # Разбиваем pass на два числа для "№Pas" и "SerPas"
+        if row[6]:  # row[6] - pass
+            pas_parts = row[6].split()  # разделяем по пробелу
+            pas_number = int(pas_parts[0]) if len(pas_parts) > 0 else 0
+            ser_number = int(pas_parts[1]) if len(pas_parts) > 1 else 0
+        else:
+            pas_number = 0
+            ser_number = 0
+
+        # Получаем telegram_id
+        telegram_id = row[7]  # row[7] - telegram_id
+
+        # Вставляем данные в таблицу "Employee"
+        target_cursor.execute("""
+            INSERT INTO Employee (Name, №Pas, SerPas, TgId) 
+            VALUES (?, ?, ?, ?)""",
+                              (name, pas_number, ser_number, telegram_id)
+                              )
+
+    # Сохраняем изменения и закрываем соединения
+    target_conn.commit()
+    source_conn.close()
+    target_conn.close()
+    print("Данные успешно перенесены!")

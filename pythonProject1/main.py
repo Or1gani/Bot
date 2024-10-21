@@ -22,6 +22,7 @@ dp.include_routers(courier_router, courier_profile_router, admin_router, admin_p
 ccm = CourierCommandManager() #Экзепляр меню для курьера
 acm = AdminCommandManager() #Экзепляр меню для админа
 
+'''
 async def get_user_id(username: str) -> int:
     if username.startswith('@'):
         try:
@@ -41,7 +42,7 @@ async def start_command(message: Message):
         await message.answer(f"ID пользователя: {user_id}")
     else:
         await message.answer("Не удалось получить ID пользователя.")
-
+'''
 
 #/start - команда запуска бота
 @dp.message(F.text.lower() == "/start")

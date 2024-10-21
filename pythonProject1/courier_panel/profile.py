@@ -6,6 +6,8 @@ from keyboards.inline import get_callback_buttons, get_region_buttons, get_profi
     region_callback
 from utils.menu_processing import get_menu_content
 
+
+
 courier_profile_router = Router()
 
 @courier_profile_router.message(Command('profile'))
@@ -23,3 +25,6 @@ async def region_change(callback : types.CallbackQuery, callback_data : region_c
         text=text,
         reply_markup=reply_markup
     )
+
+
+

@@ -14,6 +14,7 @@ class add_employee_callback(CallbackData, prefix="employee"):
     level: int
     menu_name: str
     data_for_db: str
+    yes: int | None = None
 def get_callback_buttons(
         *,
         buttons: dict[str, str],
@@ -108,11 +109,11 @@ def get_nick_confirm_btns(level: int, data_for_db: str, sizes: tuple[int] = (2,)
     keyboard.row(
         InlineKeyboardButton(
             text="Да",
-            callback_data=add_employee_callback(level=level + 1, menu_name="name1", data_for_db=data_for_db).pack() #тут
+            callback_data=add_employee_callback(level=level + 1, menu_name="name1", data_for_db=data_for_db, yes=1).pack() #тут
         ),
         InlineKeyboardButton(
             text="Нет",
-            callback_data=add_employee_callback(level=level, menu_name="nick", data_for_db=data_for_db).pack() #тут
+            callback_data=add_employee_callback(level=level, menu_name="nick", data_for_db=data_for_db, yes=0).pack() #тут
         )
     )
     return keyboard.adjust(*sizes).as_markup()
@@ -122,11 +123,85 @@ def get_name1_confirm_btns(level: int, data_for_db: str, sizes: tuple[int] = (2,
     keyboard.row(
         InlineKeyboardButton(
             text="Да",
-            callback_data=add_employee_callback(level=level + 1, menu_name="name2", data_for_db=data_for_db).pack() #тут
+            callback_data=add_employee_callback(level=level + 1, menu_name="name2", data_for_db=data_for_db, yes=1).pack() #тут
         ),
         InlineKeyboardButton(
             text="Нет",
-            callback_data=add_employee_callback(level=level, menu_name="name1", data_for_db=data_for_db).pack() #тут
+            callback_data=add_employee_callback(level=level, menu_name="name1", data_for_db=data_for_db, yes=0).pack() #тут
+        )
+    )
+    return keyboard.adjust(*sizes).as_markup()
+def get_name2_confirm_btns(level: int, data_for_db: str, sizes: tuple[int] = (2,)):
+    keyboard = InlineKeyboardBuilder()
+    keyboard.row(
+        InlineKeyboardButton(
+            text="Да",
+            callback_data=add_employee_callback(level=level + 1, menu_name="name3", data_for_db=data_for_db, yes=1).pack() #тут
+        ),
+        InlineKeyboardButton(
+            text="Нет",
+            callback_data=add_employee_callback(level=level, menu_name="name2", data_for_db=data_for_db, yes=0).pack() #тут
+        )
+    )
+    return keyboard.adjust(*sizes).as_markup()
+def get_name3_confirm_btns(level: int, data_for_db: str, sizes: tuple[int] = (2,)):
+    keyboard = InlineKeyboardBuilder()
+    keyboard.row(
+        InlineKeyboardButton(
+            text="Да",
+            callback_data=add_employee_callback(level=level + 1, menu_name="pass", data_for_db=data_for_db, yes=1).pack() #тут
+        ),
+        InlineKeyboardButton(
+            text="Нет",
+            callback_data=add_employee_callback(level=level, menu_name="name3", data_for_db=data_for_db, yes=0).pack() #тут
+        )
+    )
+    return keyboard.adjust(*sizes).as_markup()
+
+def get_pass_btns(level: int, data_for_db: str, sizes: tuple[int] = (2,)):
+    keyboard = InlineKeyboardBuilder()
+    keyboard.row(
+        InlineKeyboardButton(
+            text="Да",
+            callback_data=add_employee_callback(level=level + 1, menu_name="correction", data_for_db=data_for_db, yes=1).pack()# тут
+        ),
+        InlineKeyboardButton(
+            text="Нет",
+            callback_data=add_employee_callback(level=level, menu_name="pass", data_for_db=data_for_db, yes=0).pack()  # тут
+        )
+    )
+    return keyboard.adjust(*sizes).as_markup()
+
+def get_correction_btns(level: int, data_for_db: str, sizes: tuple[int] = (2,)):
+    keyboard = InlineKeyboardBuilder()
+    keyboard.add(
+        InlineKeyboardButton(
+            text="Роль",
+            callback_data=add_employee_callback(level=0, menu_name="role", data_for_db=data_for_db).pack()  # тут
+        ),
+        InlineKeyboardButton(
+            text="Ник телеграм",
+            callback_data=add_employee_callback(level=1, menu_name="nick", data_for_db=data_for_db).pack()  # тут
+        ),
+        InlineKeyboardButton(
+            text="Имя",
+            callback_data=add_employee_callback(level=2, menu_name="name1", data_for_db=data_for_db).pack()  # тут
+        ),
+        InlineKeyboardButton(
+            text="Фамилия",
+            callback_data=add_employee_callback(level=3, menu_name="name2", data_for_db=data_for_db).pack()  # тут
+        ),
+        InlineKeyboardButton(
+            text="Отчество",
+            callback_data=add_employee_callback(level=4, menu_name="name3", data_for_db=data_for_db).pack()  # тут
+        ),
+        InlineKeyboardButton(
+            text="Пасспорт",
+            callback_data=add_employee_callback(level=5, menu_name="pass", data_for_db=data_for_db).pack()  # тут
+        ),
+        InlineKeyboardButton(
+            text="Подтвердить",
+            callback_data=add_employee_callback(level=level+1, menu_name="confirm_data", data_for_db=data_for_db).pack()  # тут
         )
     )
     return keyboard.adjust(*sizes).as_markup()

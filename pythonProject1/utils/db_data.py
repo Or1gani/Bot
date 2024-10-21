@@ -108,3 +108,25 @@ def get_employees():
     for item in data:
         employee_other_list.append(item)
     return employee_name_list,  employee_other_list
+
+
+def create_or_update_data_for_sys(item, column, telegram_id):
+    # Получаем абсолютный путь к базе данных
+    db_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../DataBase/sys.db'))
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+
+    # Проверяем, есть ли запись для текущего пользователя (по telegram_id)
+    cursor.execute("SELECT id FROM data WHERE telegram_id = ? ORDER BY id DESC LIMIT 1", (telegram_id,))
+    row = cursor.fetchone()
+
+    if row:
+        # Если запись найдена, обновляем её
+        record_id = row[0]
+        cursor.execute(f'UPDATE data SET {column} = ? WHERE id = ?', (item, record_id))
+    else:
+        # Если записи нет, создаём новую с привязкой к telegram_id
+        cursor.execute(f'INSERT INTO data ({column}, telegram_id) VALUES (?, ?)', (item, telegram_id))
+
+    conn.commit()  # Сохраняем изменения
+    conn.close()  # Закрываем соединение

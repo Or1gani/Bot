@@ -5,7 +5,7 @@ from aiogram.filters import Command
 from keyboards.inline import get_callback_buttons, get_region_buttons, get_profile_button,  \
     region_callback
 from utils.menu_processing import get_menu_content
-from utils.db_data import set_ticket_data, is_ticket_exsist
+from utils.db_data import set_ticket_data, is_ticket_exsist, get_employee_data
 
 
 
@@ -13,7 +13,9 @@ courier_profile_router = Router()
 
 @courier_profile_router.message(Command('profile'))
 async def profile(message : Message):
-    reply_markup, text = get_menu_content(level=0, menu_name="main")
+    name, region_name, all_orders, day_orders, cash, rating = get_employee_data(message.from_user.id)
+    text = f"{name}\nВаш район: {region_name}\nВыдано заказов всего: {all_orders}\nВыдано заказов за сегодня: {day_orders}\nОбщий заработок: {cash}\n\nРейтинг: {rating}"
+    reply_markup, t = get_menu_content(level=0, menu_name="main")
     await message.answer(
         text=text,
         reply_markup=reply_markup

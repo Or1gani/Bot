@@ -187,10 +187,9 @@ def transfer_data():
 
         # Вставляем данные в таблицу "Employee"
         target_cursor.execute("""
-            INSERT INTO Employee (Name, №Pas, SerPas, TgId, Region_id) 
-            VALUES (?, ?, ?, ?, ?)""",
-                              (name, pas_number, ser_number, telegram_id, region)
-                              )
+            INSERT INTO Employee (Name, №Pas, SerPas, TgId, Region_id, ZakazAll, ZakazDay, ZarabotokAll, Rating) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                              (name, pas_number, ser_number, telegram_id, region, 0, 0, 0, 0))
 
     # Сохраняем изменения и закрываем соединения
     target_conn.commit()

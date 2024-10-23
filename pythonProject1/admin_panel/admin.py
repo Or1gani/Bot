@@ -166,7 +166,7 @@ async def pas(callback: CallbackQuery, callback_data: add_employee_callback, sta
 @admin_router.callback_query(add_employee_callback.filter(F.menu_name == "confirm_data"))
 async def res(callback :  CallbackQuery):
     transfer_data()
-    await callback.message.answer(f"Данные перенесены")
+    await callback.message.edit_text(f"Данные перенесены")
 
 
 @admin_router.callback_query(edit_employee_callback.filter(F.take == '1'))

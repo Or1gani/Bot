@@ -2,14 +2,14 @@ from aiogram.types import InlineKeyboardButton
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from typing import List
 
-from utils.db_data import get_region_list
+from utils.db_data import get_region_list, get_tickets, get_name_by_tg_id
 from aiogram.filters.callback_data import CallbackData
 from assets.menu_data import desciption_for_pages_settings as dfps
 
 class region_callback(CallbackData, prefix="region"):
     level: int
     menu_name: str # | None = None
-
+    yes: str | None = None
 
 class name_callback(CallbackData, prefix="name"):
     name: str
@@ -43,21 +43,21 @@ def get_profile_button(*, level: int, sizes: tuple[int] = (1,)):
 
     keyboard.add(InlineKeyboardButton(
         text="Смена района",
-         callback_data=region_callback(level=level+1, menu_name="region").pack()
+         callback_data=region_callback(level=level+1, menu_name="region", yes="False").pack()
     ))
     return keyboard.adjust(*sizes).as_markup()
 
 def get_region_buttons(*, level: int, sizes: tuple[int] = (1,)):
     keyboard = InlineKeyboardBuilder()
-    regions = ['Район 1', 'Район 2', 'Район 3', 'Район 4', 'Район 5', 'Район 6', 'Район 7'] #В дальнейшем замениться на подсос данных из бд
+    regions = get_region_list()
     keyboard.add(InlineKeyboardButton(
         text='Назад',
-         callback_data=region_callback(level=0, menu_name="main").pack()
+         callback_data=region_callback(level=0, menu_name="main", yes="False").pack()
     ))
-    for region in regions:
+    for region_id, region_name in regions.items():
         keyboard.add(InlineKeyboardButton(
-            text=region,
-            callback_data=region_callback(level=level, menu_name="region").pack()
+            text=region_name,
+            callback_data=region_callback(level=level+1, menu_name=str(region_id), yes="True").pack()
         ))
     return keyboard.adjust(*sizes).as_markup()
 def get_back_to_panel(sizes: tuple[int] = (1,)):
@@ -281,5 +281,48 @@ def get_region_setting_btns(*, level: int, sizes: tuple[int] = (2,)):
                 callback_data=add_employee_callback(level=level + 1, menu_name="correction", data_for_db=str(reg_id)).pack()
             )
         )
+    return keyboard.adjust(*sizes).as_markup()
+
+class ticket_callback(CallbackData, prefix="ticket"):
+    level: int
+    name: str | None = None
+    fr: str | None = None
+    to: str | None = None
+    tg_id: str | None = None
+    decide: str | None = None
+
+def get_ticket_btns(level: int, sizes: tuple[int] = (1,)):
+    keyboard = InlineKeyboardBuilder()
+    ticket_list = get_tickets()
+    for ticket in ticket_list:
+        tg_id = ticket[0]
+        name = get_name_by_tg_id(ticket[0])
+        print(name, ticket[1], ticket[2])
+        keyboard.add(
+            InlineKeyboardButton(
+                text=name,
+                callback_data=ticket_callback(level=level+1, tg_id=tg_id, fr=str(ticket[1]), to=str(ticket[2])).pack()
+            )
+        )
+    return keyboard.adjust(*sizes).as_markup()
+
+def get_ticket_approve_btns(level: int, tg_id: str, fr: str, to: str, sizes: tuple[int] = (2,)):
+    keyboard = InlineKeyboardBuilder()
+    keyboard.row(
+        InlineKeyboardButton(
+            text= "Да",
+            callback_data=ticket_callback(level=level+1, tg_id=tg_id, fr=fr, to=to, decide="Yes").pack()
+        ),
+        InlineKeyboardButton(
+            text="Нет",
+            callback_data=ticket_callback(level=level+1, tg_id=tg_id, fr=fr, to=to, decide="No").pack()
+        )
+    )
+    keyboard.add(
+        InlineKeyboardButton(
+            text="Назад",
+            callback_data="change_reg"
+        )
+    )
     return keyboard.adjust(*sizes).as_markup()
 

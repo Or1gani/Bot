@@ -62,6 +62,18 @@ def admin_valid(telegram_id):
             return True
     return False
 
+def regionid_to_regionname(region_id):
+    # Получаем абсолютный путь к базе данных
+    set_update_courier_amount()
+    db_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../DataBase/Kura.db'))
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT Region FROM Regions WHERE № = ?", (region_id,))
+
+    region = cursor.fetchone()[0]
+    return region
+
 def reg_id_to_str(name):
     # Получаем абсолютный путь к базе данных
     set_update_courier_amount()
@@ -198,3 +210,93 @@ def get_region_list():
     for id, reg in enumerate(list):
         reg_list[id+1] = reg[0]
     return reg_list
+
+
+def get_employee_data(tg_id):
+    # Получаем абсолютный путь к базе данных
+    db_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../DataBase/Kura.db'))
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+    cursor.execute("SELECT Region_id FROM Employee WHERE TgId = ?", (tg_id,))
+    region_id = cursor.fetchone()[0]
+    cursor.execute("SELECT Region FROM Regions WHERE № = ?", (region_id,))
+    region = cursor.fetchone()[0]
+    cursor.execute("SELECT Name, ZakazAll, ZakazDay, ZarabotokAll, Rating FROM Employee WHERE TgId = ?", (tg_id,))
+    data = cursor.fetchone()
+    name, all_orders, day_orders, cash, rating = data[0], data[1], data[2], data[3], data[4]
+    return name, region, all_orders, day_orders, cash, rating
+
+def is_ticket_exsist(tg_id):
+    # Подключаемся к исходной и целевой базам данных
+    sys_db_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../DataBase/sys.db'))
+    sys_conn = sqlite3.connect(sys_db_path)
+    sys_cursor = sys_conn.cursor()
+    sys_cursor.execute("SELECT tg_id_employee FROM ticket_region WHERE tg_id_employee = ?", (tg_id,))
+    id = sys_cursor.fetchone()
+    if id is not None:
+        print(id[0])
+        return False
+    else:
+        print(id)
+        return True
+
+
+def set_ticket_data(tg_id, target_region):
+    # Подключаемся к исходной и целевой базам данных
+    sys_db_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../DataBase/sys.db'))
+    Kura_db_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../DataBase/Kura.db'))
+    sys_conn = sqlite3.connect(sys_db_path)
+    Kura_conn = sqlite3.connect(Kura_db_path)
+
+    sys_cursor = sys_conn.cursor()
+    kura_cursor = Kura_conn.cursor()
+
+    kura_cursor.execute("SELECT Region_id FROM Employee WHERE TgId = ?", (tg_id,))
+    current_region = kura_cursor.fetchone()[0]
+    sys_cursor.execute('INSERT INTO ticket_region ("tg_id_employee", "from", "to") VALUES (?, ?, ?)', (tg_id, current_region, target_region))
+
+    sys_conn.commit()
+    sys_conn.close()
+    kura_cursor.close()
+
+
+def get_tickets():
+    # Подключаемся к исходной и целевой базам данных
+    sys_db_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../DataBase/sys.db'))
+    sys_conn = sqlite3.connect(sys_db_path)
+    sys_cursor = sys_conn.cursor()
+    sys_cursor.execute('SELECT "tg_id_employee", "from", "to" FROM ticket_region')
+    tickets = sys_cursor.fetchall()
+    print(tickets)
+    return tickets
+
+def get_name_by_tg_id(tg_id):
+    # Получаем абсолютный путь к базе данных
+    db_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../DataBase/Kura.db'))
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+    cursor.execute("SELECT Name FROM Employee WHERE TgId = ?", (tg_id,))
+    name = cursor.fetchone()
+    if name is not None:
+        return name[0]
+    else:
+        print("Ошибка! get_name_by_tg_id - Name = none")
+
+
+def update_region(tg_id, new_region_id):
+    # Получаем абсолютный путь к базе данных
+    db_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../DataBase/Kura.db'))
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+    cursor.execute("UPDATE Employee SET Region_id = ? WHERE TgId = ?", (new_region_id, tg_id))
+    conn.commit()
+    conn.close()
+
+def remove_ticket(tg_id):
+    # Получаем абсолютный путь к базе данных
+    db_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../DataBase/sys.db'))
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM ticket_region WHERE tg_id_employee = ?", (tg_id,))
+    conn.commit()
+    conn.close()

@@ -2,7 +2,6 @@ import sqlite3
 import os
 
 
-
 def get_employee_attr(telegram_id):
     # Получаем абсолютный путь к базе данных
     db_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../DataBase/Kura.db'))
@@ -131,6 +130,17 @@ def create_or_update_data_for_sys(item, column, telegram_id):
     conn.commit()  # Сохраняем изменения
     conn.close()  # Закрываем соединение
 
+def get_tg_name(admin_id):
+    # Получаем абсолютный путь к базе данных
+    db_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../DataBase/sys.db'))
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+    cursor.execute("SELECT nick FROM data WHERE telegram_id = ?", (admin_id,))
+    nick = cursor.fetchone()
+    conn.commit()  # Сохраняем изменения
+    conn.close()  # Закрываем соединение
+    return nick[0]
+
 
 def transfer_data():
     # Подключаемся к исходной и целевой базам данных
@@ -160,13 +170,14 @@ def transfer_data():
             ser_number = 0
 
         # Получаем telegram_id
-        telegram_id = row[7]  # row[7] - telegram_id
+        telegram_id = row[9]  # row[7] - telegram_id
+        region = row[8]
 
         # Вставляем данные в таблицу "Employee"
         target_cursor.execute("""
-            INSERT INTO Employee (Name, №Pas, SerPas, TgId) 
-            VALUES (?, ?, ?, ?)""",
-                              (name, pas_number, ser_number, telegram_id)
+            INSERT INTO Employee (Name, №Pas, SerPas, TgId, Region_id) 
+            VALUES (?, ?, ?, ?, ?)""",
+                              (name, pas_number, ser_number, telegram_id, region)
                               )
 
     # Сохраняем изменения и закрываем соединения
@@ -174,3 +185,16 @@ def transfer_data():
     source_conn.close()
     target_conn.close()
     print("Данные успешно перенесены!")
+
+
+def get_region_list():
+    # Получаем абсолютный путь к базе данных
+    db_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../DataBase/Kura.db'))
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+    cursor.execute("SELECT Region FROM Regions")
+    list = cursor.fetchall()
+    reg_list = {}
+    for id, reg in enumerate(list):
+        reg_list[id+1] = reg[0]
+    return reg_list

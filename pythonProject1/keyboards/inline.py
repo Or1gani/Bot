@@ -2,19 +2,26 @@ from aiogram.types import InlineKeyboardButton
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from typing import List
 
+from utils.db_data import get_region_list
 from aiogram.filters.callback_data import CallbackData
 from assets.menu_data import desciption_for_pages_settings as dfps
 
 class region_callback(CallbackData, prefix="region"):
     level: int
     menu_name: str # | None = None
+
+
 class name_callback(CallbackData, prefix="name"):
     name: str
+
+
 class add_employee_callback(CallbackData, prefix="employee"):
     level: int
     menu_name: str
     data_for_db: str | None = None
     yes: int | None = None
+
+
 class edit_employee_callback(CallbackData, prefix="edit"):
     menu_name: str | None = None
     value: str | None = None
@@ -168,7 +175,7 @@ def get_pass_btns(level: int, data_for_db: str, sizes: tuple[int] = (2,)):
     keyboard.row(
         InlineKeyboardButton(
             text="Да",
-            callback_data=add_employee_callback(level=level + 1, menu_name="correction", data_for_db=data_for_db, yes=1).pack()# тут
+            callback_data=add_employee_callback(level=level + 1, menu_name="region", data_for_db=data_for_db, yes=1).pack()# тут
         ),
         InlineKeyboardButton(
             text="Нет",
@@ -239,6 +246,10 @@ def get_correction_btns2(level: int, data_for_db: str, sizes: tuple[int] = (2,))
             callback_data= edit_employee_callback(menu_name="pass", take='1').pack()
         ),
         InlineKeyboardButton(
+            text="Регион",
+            callback_data=edit_employee_callback(menu_name="region", take='1').pack()
+        ),
+        InlineKeyboardButton(
             text="Подтвердить",
             callback_data=add_employee_callback(level=level+1, menu_name="confirm_data", data_for_db=data_for_db).pack()  # тут
         )
@@ -258,3 +269,17 @@ def get_decide(menu_name: str, value: str, sizes: tuple[int] = (2,)):
         )
     )
     return keyboard.adjust(*sizes).as_markup()
+
+def get_region_setting_btns(*, level: int, sizes: tuple[int] = (2,)):
+    keyboard = InlineKeyboardBuilder()
+    reg_list = get_region_list()
+    print(reg_list)
+    for reg_id, reg_name in reg_list.items():
+        keyboard.add(
+            InlineKeyboardButton(
+                text=reg_name,
+                callback_data=add_employee_callback(level=level + 1, menu_name="correction", data_for_db=str(reg_id)).pack()
+            )
+        )
+    return keyboard.adjust(*sizes).as_markup()
+

@@ -1,5 +1,6 @@
 import sqlite3
 import os
+import random
 
 
 def get_employee_attr(telegram_id):
@@ -297,5 +298,180 @@ def remove_ticket(tg_id):
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
     cursor.execute("DELETE FROM ticket_region WHERE tg_id_employee = ?", (tg_id,))
+    conn.commit()
+    conn.close()
+
+
+def get_regionid_by_tg_id(tg_id):
+    # Подключаемся к базе данных
+    db_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../DataBase/Kura.db'))
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT Region_id FROM Employee WHERE TgId = ?", (tg_id,))
+    reg_id = cursor.fetchone()[0]
+    return reg_id
+
+
+def count_orders_by_region(tg_id):
+    # Подключаемся к базе данных
+    db_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../DataBase/Kura.db'))
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+    reg_id_of_employee = get_regionid_by_tg_id(tg_id)
+    # Выполняем запрос для подсчета заказов по Region_id
+    cursor.execute("""
+        SELECT Region_id, COUNT(*) as order_count 
+        FROM Zakaz
+        WHERE Deleated_at IS NULL AND Region_id = ? AND Status_id = ?-- Учитываем только не удаленные заказы, если это важно
+        GROUP BY Region_id
+    """, (reg_id_of_employee, 1))
+
+    # Извлекаем и выводим результаты
+    results = cursor.fetchone()
+    if results:
+        print(results[1])
+        return results[1]
+    else:
+        print("Нет заказов для вывода")
+        return 0
+    # Закрываем соединение
+    conn.close()
+
+
+def check_id_in_db(tg_id):
+    # Подключаемся к базе данных
+    db_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../DataBase/Kura.db'))
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+    cursor.execute("SELECT TgId FROM Employee WHERE TgId = ?", (tg_id,))
+    res = cursor.fetchone()
+    if res:
+        return True
+    else:
+        return False
+
+
+def set_status(order_id, status):
+    # Подключаемся к базе данных
+    db_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../DataBase/Kura.db'))
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+
+    cursor.execute("""UPDATE Zakaz
+        SET Status_id = ?
+        WHERE № = ?;""", (status, order_id))
+
+    conn.commit()
+    conn.close()
+
+
+def set_courier_on_order(tg_id, order_id):
+    # Подключаемся к базе данных
+    db_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../DataBase/Kura.db'))
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+
+    courier_id = get_courier_id_by_tg_id(tg_id)
+
+    cursor.execute("""UPDATE Zakaz
+        SET Kura_id = ?
+        WHERE № = ?;""", (courier_id, order_id))
+
+    conn.commit()
+    conn.close()
+
+
+def get_courier_id_by_tg_id(tg_id):
+    # Подключаемся к базе данных
+    db_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../DataBase/Kura.db'))
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT № FROM Employee WHERE TgId  = ?", (tg_id,))
+    courier_id = cursor.fetchone()[0]
+    conn.commit()
+    conn.close()
+    return courier_id
+
+def get_random_order(tg_id):
+    # Подключаемся к базе данных
+    db_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../DataBase/Kura.db'))
+    conn2 = sqlite3.connect(db_path)
+    cursor = conn2.cursor()
+
+    reg_id_of_employee = get_regionid_by_tg_id(tg_id)
+    cursor.execute("SELECT № FROM Zakaz WHERE Deleated_at IS NULL AND Region_id = ? AND Kura_id IS NULL AND Status_id = ?", (reg_id_of_employee, 1))
+    region_ids = cursor.fetchall()
+
+
+
+    free_orders_ids = []
+    for reg_id in region_ids:
+        free_orders_ids.append(reg_id[0])
+    if len(free_orders_ids) != 0:
+        random_order =  random.choice(free_orders_ids)
+
+        set_status(random_order, 2)
+        set_courier_on_order(tg_id, random_order)
+
+        cursor.execute("SELECT * FROM Zakaz WHERE № = ?", (random_order,))
+        order_data = cursor.fetchone()
+
+        id_order = order_data[0]
+        adress_from = order_data[1]
+        adress_to = order_data[2]
+        sostav = order_data[3]
+        kura_id = order_data[6]
+        region = order_data[7]
+        status_id = order_data[8]
+
+        return id_order, adress_from, adress_to, sostav, kura_id, region, status_id
+    else:
+        print("Отсутствуют заказы")
+    conn2.commit()
+    conn2.close()
+
+
+#Тут возможна проблема. Если курьер имеет больше одного заказа выведится только один (скорее всего последний взятый или первый в списке)
+def get_order_data(tg_id):
+    # Подключаемся к базе данных
+    db_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../DataBase/Kura.db'))
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+
+    courier_id = get_courier_id_by_tg_id(tg_id)
+
+    cursor.execute("SELECT * FROM Zakaz WHERE Kura_id = ?", (courier_id,))
+    order_data = cursor.fetchone()
+
+    conn.commit()
+    conn.close()
+
+    id_order = order_data[0]
+    adress_from = order_data[1]
+    adress_to = order_data[2]
+    sostav = order_data[3]
+    kura_id = order_data[6]
+    region = order_data[7]
+    status_id = order_data[8]
+
+    return id_order, adress_from, adress_to, sostav, kura_id, region, status_id
+
+
+def set_cancel_order(tg_id):
+    # Подключаемся к базе данных
+    db_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../DataBase/Kura.db'))
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+
+    courier_id = get_courier_id_by_tg_id(tg_id)
+
+    cursor.execute("""
+        UPDATE Zakaz
+        SET Kura_id = NULL, Status_id = 1
+        WHERE Kura_id = ?
+    """, (courier_id,))
+
     conn.commit()
     conn.close()

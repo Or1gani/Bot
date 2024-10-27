@@ -13,6 +13,7 @@ from utils.menu_button import Command_manager, CourierCommandManager, AdminComma
 from utils.db_data import admin_valid
 
 from admin_panel.admin import app
+from utils.scheduler import schedule_daily_reset
 
 
 
@@ -41,6 +42,7 @@ async def start_command(message : Message):
 #основная функция запуска бота
 async def main():
     print("ON AIR")
+    schedule_daily_reset()  # Подключение планировщика
     await app.start()  # Запускаем клиент
     await dp.start_polling(bot, skip_updates=True)
 

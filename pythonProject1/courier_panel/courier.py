@@ -6,7 +6,8 @@ from aiogram.filters import Command
 from keyboards.inline import get_callback_buttons
 from keyboards.reply import get_buttons
 from utils.db_data import (check_id_in_db, count_orders_by_region, regionid_to_regionname,
-                           get_random_order, get_order_data, set_cancel_order, set_status)
+                           get_random_order, get_order_data, set_cancel_order, set_status,
+                           set_close_order, set_zakaz_plus, set_day_zakaz_plus)
 
 courier_router = Router()
 
@@ -39,7 +40,6 @@ delete_tasks = {}
 @courier_router.callback_query(F.data == 'take_order')
 async def take_order(callback : CallbackQuery):
     data = get_random_order(callback.from_user.id)
-    print(data)
     set_status(data[0], 2)
     text = f"Откуда: {data[1]}\nКуда: {data[2]}\nНомер заказа: {data[0]}"
     msg = await callback.message.edit_text(
@@ -66,20 +66,17 @@ async def take_order(callback : CallbackQuery):
 
 
 
+
 async def delete_message_after_delay(callback: CallbackQuery, msg: Message, delay: int):
     await asyncio.sleep(delay)
-
     # Проверяем, существует ли сообщение и не была ли задача отменена
     if msg.message_id in delete_tasks:
-        try:
-            await msg.delete()
-            data = get_order_data(callback.from_user.id)
-            set_cancel_order(callback.from_user.id)
-            await callback.message.answer(
-                f"Вы не подтвердили, что находитесь в пути - заказ №{data[0]} отменен."
-            )
-        except Exception as e:
-            print(f"Ошибка при удалении сообщения: {e}")
+        await msg.delete()
+        data = get_order_data(callback.from_user.id)
+        set_cancel_order(callback.from_user.id)
+        await callback.message.answer(
+            f"Вы не подтвердили, что находитесь в пути - заказ №{data[0]} отменен."
+        )
 
 @courier_router.callback_query(F.data == 'go')
 async def go(callback : CallbackQuery):
@@ -121,6 +118,9 @@ async def confirm(callback : CallbackQuery):
     data = get_order_data(callback.from_user.id)
     text = f"Откуда: {data[1]}\nКуда: {data[2]}\nНомер заказа: {data[0]}"
     set_status(data[0], 5)
+    set_close_order(callback.from_user.id, data[0])
+    set_zakaz_plus(callback.from_user.id)
+    set_day_zakaz_plus(callback.from_user.id)
     await callback.message.edit_text(
         text=text
     )

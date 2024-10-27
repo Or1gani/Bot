@@ -6,7 +6,6 @@ import random
 def get_employee_attr(telegram_id):
     # Получаем абсолютный путь к базе данных
     db_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../DataBase/Kura.db'))
-    print(f"Используемый путь к базе данных: {db_path}")  # Для отладки
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
     # Выполняем запрос к таблице
@@ -14,7 +13,6 @@ def get_employee_attr(telegram_id):
 
     # Извлекаем результат
     result = cursor.fetchone()
-    print(result)
     if result:
         name, number, all_orders, daily_orders = result
     else:
@@ -234,10 +232,10 @@ def is_ticket_exsist(tg_id):
     sys_cursor.execute("SELECT tg_id_employee FROM ticket_region WHERE tg_id_employee = ?", (tg_id,))
     id = sys_cursor.fetchone()
     if id is not None:
-        print(id[0])
+        #print(id[0])
         return False
     else:
-        print(id)
+        #print(id)
         return True
 
 
@@ -267,7 +265,7 @@ def get_tickets():
     sys_cursor = sys_conn.cursor()
     sys_cursor.execute('SELECT "tg_id_employee", "from", "to" FROM ticket_region')
     tickets = sys_cursor.fetchall()
-    print(tickets)
+    #print(tickets)
     return tickets
 
 def get_name_by_tg_id(tg_id):
@@ -330,7 +328,7 @@ def count_orders_by_region(tg_id):
     # Извлекаем и выводим результаты
     results = cursor.fetchone()
     if results:
-        print(results[1])
+        #print(results[1])
         return results[1]
     else:
         print("Нет заказов для вывода")
@@ -441,12 +439,10 @@ def get_order_data(tg_id):
     cursor = conn.cursor()
 
     courier_id = get_courier_id_by_tg_id(tg_id)
-
-    cursor.execute("SELECT * FROM Zakaz WHERE Kura_id = ?", (courier_id,))
+    cursor.execute("SELECT * FROM Zakaz WHERE Kura_id = ? AND Deleated_at  IS NULL", (courier_id,))
     order_data = cursor.fetchone()
 
-    conn.commit()
-    conn.close()
+
 
     id_order = order_data[0]
     adress_from = order_data[1]
@@ -455,6 +451,9 @@ def get_order_data(tg_id):
     kura_id = order_data[6]
     region = order_data[7]
     status_id = order_data[8]
+
+    conn.commit()
+    conn.close()
 
     return id_order, adress_from, adress_to, sostav, kura_id, region, status_id
 
@@ -470,8 +469,70 @@ def set_cancel_order(tg_id):
     cursor.execute("""
         UPDATE Zakaz
         SET Kura_id = NULL, Status_id = 1
-        WHERE Kura_id = ?
+        WHERE Kura_id = ? AND Deleated_at IS NULL
     """, (courier_id,))
 
+    conn.commit()
+    conn.close()
+
+
+def set_close_order(tg_id, order_id):
+    # Подключаемся к базе данных
+    db_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../DataBase/Kura.db'))
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+
+    courier_id = get_courier_id_by_tg_id(tg_id)
+
+    cursor.execute("""
+        UPDATE Zakaz
+        SET Deleated_at = strftime('%Y-%m-%d %H:%M:%S', 'now')
+        WHERE Kura_id = ? AND Status_id = ? AND № = ?;
+    """, (courier_id, 5, order_id))
+
+    conn.commit()
+    conn.close()
+
+
+def set_zakaz_plus(tg_id):
+    # Подключаемся к базе данных
+    db_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../DataBase/Kura.db'))
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        UPDATE Employee
+        SET ZakazAll = COALESCE(ZakazAll, 0) + 1
+        WHERE TgID = ?;
+    """, (tg_id,))
+
+    conn.commit()
+    conn.close()
+
+def set_day_zakaz_plus(tg_id):
+    # Подключаемся к базе данных
+    db_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../DataBase/Kura.db'))
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        UPDATE Employee
+        SET ZakazDay = COALESCE(ZakazDay, 0) + 1
+        WHERE TgID = ?;
+    """, (tg_id,))
+
+    conn.commit()
+    conn.close()
+
+def reset_daily_orders():
+    # Подключаемся к базе данных
+    db_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../DataBase/Kura.db'))
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+
+    print("Обнулены все заказы за день")
+
+    # Сброс значения ZakazDay для всех сотрудников
+    cursor.execute("UPDATE Employee SET ZakazDay = 0;")
     conn.commit()
     conn.close()

@@ -2,13 +2,20 @@ from aiogram import F, Router, types
 from aiogram.types import Message, CallbackQuery
 from aiogram.filters import Command
 
-from keyboards.inline import get_callback_buttons, get_region_buttons, get_profile_button, \
-    region_callback, name_callback, get_name_emplyees_buttons, get_back_to_panel, get_ticket_btns, ticket_callback
+from keyboards.inline import (get_callback_buttons, get_region_buttons, get_profile_button,
+                              region_callback, name_callback, get_name_emplyees_buttons,
+                              get_back_to_panel, get_ticket_btns, ticket_callback, edit_profile_inf_callback,
+                              get_change_employee_data_btns, get_sure_btns)
 from utils.menu_processing import get_menu_content, get_ticket_content
 from utils.db_data import (set_update_courier_amount, admin_valid, get_admin_panel_data, get_employees, reg_id_to_str,
-                           regionid_to_regionname, update_region, get_name_by_tg_id, remove_ticket)
+                           regionid_to_regionname, update_region, get_name_by_tg_id, remove_ticket,
+                           set_new_data_for_employee)
+from utils.FSMs import change_data
+from aiogram.fsm.context import FSMContext
+
 
 admin_profile_router = Router()
+
 
 @admin_profile_router.message(Command('admin_panel'))
 async def profile(message : Message):
@@ -71,12 +78,58 @@ async def back_to_panel(callback: CallbackQuery):
 @admin_profile_router.callback_query(name_callback.filter())
 async def name_employee_buttons(callback : types.CallbackQuery, callback_data : name_callback):
     names, other_data = get_employees()
-    rm = get_back_to_panel()
+
     for index, item in enumerate(other_data):
         if item[0] == callback_data.name:
             courier_reg = reg_id_to_str(item[0])
             if item[9] == None:
+                tg_id = str(item[4])
+                rm = get_back_to_panel(tg_id)
                 await callback.message.edit_text(text=f'ФИО: {item[0]}\nНомер паспорта: {item[1]}\nСерия паспорта: {item[2]}\nТелефон: {item[3]}\nID Telegram: {item[4]}\nОбщее количество заказов: {item[5]}\nЗаказов за день: {item[6]}\nОбщий заработок: {item[7]}\nРегион: {courier_reg}\nРейтинг: Отсутствует', reply_markup=rm)
             else:
+                tg_id = str(item[4])
+                rm = get_back_to_panel(tg_id)
                 await callback.message.edit_text(text=f'ФИО: {item[0]}\nНомер паспорта: {item[1]}\nСерия паспорта: {item[2]}\nТелефон: {item[3]}\nID Telegram: {item[4]}\nОбщее количество заказов: {item[5]}\nЗаказов за день: {item[6]}\nОбщий заработок: {item[7]}\nРегион: {courier_reg}\nРейтинг: {item[9]}', reply_markup=rm)
 
+
+@admin_profile_router.callback_query(edit_profile_inf_callback.filter(F.yes == "True"))
+async def change_employee_data(callback: CallbackQuery, callback_data: edit_profile_inf_callback):
+    tg_id = callback_data.tg_id
+    rm = get_change_employee_data_btns(tg_id)
+    await callback.message.edit_text("Выберите пункт, который хотите изменить: ", reply_markup=rm)
+
+
+@admin_profile_router.callback_query(edit_profile_inf_callback.filter(F.yes == "False"))
+async def change_employee_data(callback: CallbackQuery, callback_data: edit_profile_inf_callback, state: FSMContext):
+    await callback.message.answer(f"Введите нужное значение: ")
+    await state.set_state(change_data.waiting_for_data)
+    await state.update_data(tg_id=callback_data.tg_id, column=callback_data.column, value="Nothing")
+
+
+@admin_profile_router.message(change_data.waiting_for_data)
+async def waiting_for_data(message: Message, state : FSMContext):
+    data = await state.get_data()
+    tg_id = data.get('tg_id')
+    column = data.get('column')
+    rm = get_sure_btns(tg_id, column)
+    await state.update_data(tg_id=tg_id, column=column, value=message.text)
+    await message.answer("Вы уверены?", reply_markup=rm)
+
+
+@admin_profile_router.callback_query(edit_profile_inf_callback.filter(F.yes == "Yes"))
+async def yes_btn(callback: CallbackQuery, callback_data: edit_profile_inf_callback, state: FSMContext):
+    data = await state.get_data()
+    value = data.get('value')
+    print(value)
+    set_new_data_for_employee(callback_data.column, value, callback_data.tg_id)
+    await callback.message.answer("Данные успешно изменены")
+    rm = get_change_employee_data_btns(callback_data.tg_id)
+    await callback.message.edit_text("Выберите пункт, который хотите изменить: ", reply_markup=rm)
+    await state.clear()
+
+
+@admin_profile_router.callback_query(edit_profile_inf_callback.filter(F.yes == "No"))
+async def no_btn(callback: CallbackQuery, callback_data: edit_profile_inf_callback, state: FSMContext):
+    await state.clear()
+    rm = get_change_employee_data_btns(callback_data.tg_id)
+    await callback.message.edit_text("Выберите пункт, который хотите изменить: ", reply_markup=rm)

@@ -21,6 +21,7 @@ admin_router = Router()
 data = []
 app = Client("my_bot", bot_token=TOKEN, api_id=API_ID, api_hash=API_HASH)
 
+
 @admin_router.callback_query(F.data == "add_employee")
 async def set_role(callback: CallbackQuery):
     rm, text = get_setting_content(level=0, menu_name="role", data_for_db=None)
@@ -49,6 +50,7 @@ async def process_nick(message: Message, state : FSMContext):
         await message.answer("Ник пользователя должен начинаться с '@' и не содержать пробелов!")
         await state.set_state(add_employee_states.waiting_for_nick)
 
+
 async def get_user_id(username: str) -> int:
     if username.startswith('@'):
         try:
@@ -60,6 +62,8 @@ async def get_user_id(username: str) -> int:
     else:
         print("Юзернейм должен начинаться с '@'.")
         return None
+
+
 @admin_router.callback_query(add_employee_callback.filter(F.menu_name == "name1"))
 async def name1(callback: CallbackQuery, callback_data: add_employee_callback, state : FSMContext):
     if callback_data.yes != None:

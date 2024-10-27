@@ -1,5 +1,6 @@
 from aiogram.fsm.state import State, StatesGroup
 
+
 class add_employee_states(StatesGroup):
     waiting_for_nick = State()
     waiting_for_name1 = State()
@@ -8,5 +9,10 @@ class add_employee_states(StatesGroup):
     waiting_for_pass = State()
     waiting_for_confirmation = State()
 
+
 class edit_employee(StatesGroup):
+    waiting_for_data = State()
+
+
+class change_data(StatesGroup):
     waiting_for_data = State()

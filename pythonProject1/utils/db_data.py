@@ -536,3 +536,21 @@ def reset_daily_orders():
     cursor.execute("UPDATE Employee SET ZakazDay = 0;")
     conn.commit()
     conn.close()
+
+
+def set_new_data_for_employee(column, value, tg_id):
+    # Подключаемся к базе данных
+    db_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../DataBase/Kura.db'))
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+
+    cursor.execute(f"""
+        UPDATE Employee
+        SET {column} = ?
+        WHERE TgId = ?
+    """, (value, tg_id))
+
+    print("Запись произведена")
+    conn.commit()
+    conn.close()
+

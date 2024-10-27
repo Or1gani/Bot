@@ -27,6 +27,12 @@ class edit_employee_callback(CallbackData, prefix="edit"):
     value: str | None = None
     decide: str | None = None
     take: str |None = None
+
+
+class edit_profile_inf_callback(CallbackData, prefix="ep"):
+    tg_id: str
+    column: str | None = None
+    yes: str | None = None
 def get_callback_buttons(
         *,
         buttons: dict[str, str],
@@ -60,8 +66,13 @@ def get_region_buttons(*, level: int, sizes: tuple[int] = (1,)):
             callback_data=region_callback(level=level+1, menu_name=str(region_id), yes="True").pack()
         ))
     return keyboard.adjust(*sizes).as_markup()
-def get_back_to_panel(sizes: tuple[int] = (1,)):
+def get_back_to_panel(tg_id, sizes: tuple[int] = (1,)):
     keyboard = InlineKeyboardBuilder()
+
+    keyboard.add(InlineKeyboardButton(
+        text='Редактировать профиль',
+        callback_data= edit_profile_inf_callback(tg_id=tg_id, yes="True").pack()
+    ))
     keyboard.add(
         InlineKeyboardButton(
             text="Назад",
@@ -70,6 +81,52 @@ def get_back_to_panel(sizes: tuple[int] = (1,)):
     )
 
     return keyboard.adjust(*sizes).as_markup()
+
+
+def get_change_employee_data_btns(tg_id, sizes: tuple[int] = (1,)):
+    keyboard = InlineKeyboardBuilder()
+
+    keyboard.add(InlineKeyboardButton(
+        text='ФИО',
+        callback_data=edit_profile_inf_callback(tg_id=tg_id, column="Name",yes="False").pack()
+    ))
+    keyboard.add(InlineKeyboardButton(
+        text='Номер паспорта',
+        callback_data=edit_profile_inf_callback(tg_id=tg_id, column="№Pas",yes="False").pack()
+    ))
+    keyboard.add(InlineKeyboardButton(
+        text='Серия паспорта',
+        callback_data=edit_profile_inf_callback(tg_id=tg_id, column="SerPas",yes="False").pack()
+    ))
+    keyboard.add(InlineKeyboardButton(
+        text='Телефон',
+        callback_data=edit_profile_inf_callback(tg_id=tg_id, column="Telefon",yes="False").pack()
+    ))
+    keyboard.add(
+        InlineKeyboardButton(
+            text="Назад",
+            callback_data="back-to-admin-panel"
+        )
+    )
+
+    return keyboard.adjust(*sizes).as_markup()
+
+
+def get_sure_btns(tg_id, column, sizes: tuple[int] = (1,)):
+    keyboard = InlineKeyboardBuilder()
+
+    keyboard.add(InlineKeyboardButton(
+        text='Да',
+        callback_data=edit_profile_inf_callback(tg_id=tg_id, column=column, yes="Yes").pack()
+    ))
+    keyboard.add(InlineKeyboardButton(
+        text='Нет',
+        callback_data=edit_profile_inf_callback(tg_id=tg_id, column=column,yes="No").pack()
+    ))
+
+    return keyboard.adjust(*sizes).as_markup()
+
+
 def get_name_emplyees_buttons(names: List[str], sizes: tuple[int] = (1,)):
     keyboard = InlineKeyboardBuilder()
     for name in names:
@@ -304,6 +361,12 @@ def get_ticket_btns(level: int, sizes: tuple[int] = (1,)):
                 callback_data=ticket_callback(level=level+1, tg_id=tg_id, fr=str(ticket[1]), to=str(ticket[2])).pack()
             )
         )
+    keyboard.add(
+        InlineKeyboardButton(
+            text="Назад",
+            callback_data="back-to-admin-panel"
+        )
+    )
     return keyboard.adjust(*sizes).as_markup()
 
 def get_ticket_approve_btns(level: int, tg_id: str, fr: str, to: str, sizes: tuple[int] = (2,)):

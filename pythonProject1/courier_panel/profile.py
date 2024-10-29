@@ -25,6 +25,8 @@ async def profile(message : Message):
 async def region_change(callback : types.CallbackQuery, callback_data : region_callback):
     print(callback_data.level, callback_data.menu_name)
     reply_markup, text = get_menu_content(level=callback_data.level, menu_name=callback_data.menu_name)
+    name, region_name, all_orders, day_orders, cash, rating = get_employee_data(callback.from_user.id)
+    text = f"{name}\nВаш район: {region_name}\nВыдано заказов всего: {all_orders}\nВыдано заказов за сегодня: {day_orders}\nОбщий заработок: {cash}\n\nРейтинг: {rating}"
     await callback.message.edit_text(
         text=text,
         reply_markup=reply_markup

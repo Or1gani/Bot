@@ -51,8 +51,17 @@ async def approve_ticket(callback: CallbackQuery, callback_data: ticket_callback
     remove_ticket(callback_data.tg_id)
     await callback.answer("Тикет решен",cache_time=5)
 
-    await bot.send_message(chat_id=callback_data.tg_id, text="Вам одобрена смена района")
+    #await bot.send_message(chat_id=callback_data.tg_id, text="Вам одобрена смена района")
 
+    rm = get_ticket_content(level=0, tg_id=None, fr=None, to=None)
+    await callback.message.edit_text("Тикеты на смену района: ", reply_markup=rm)
+
+
+@admin_profile_router.callback_query(ticket_callback.filter(F.decide == "No"))
+async def approve_ticket(callback: CallbackQuery, callback_data: ticket_callback):
+    update_region(callback_data.tg_id, callback_data.to)
+    remove_ticket(callback_data.tg_id)
+    await callback.answer("Тикет решен", cache_time=5)
     rm = get_ticket_content(level=0, tg_id=None, fr=None, to=None)
     await callback.message.edit_text("Тикеты на смену района: ", reply_markup=rm)
 
